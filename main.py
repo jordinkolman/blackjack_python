@@ -5,7 +5,6 @@ import os
 def clear():
   os.system('cls' if os.name == 'nt' else 'clear')
 
-cards = [11, 2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 10, 10]
 
 def deal(player):
     card = random.choice(cards)
@@ -13,19 +12,24 @@ def deal(player):
         if card == 11:
             ace_choice = int(input('You drew an Ace! Would you like a 1, or 11?\n'))
             player_cards.append(ace_choice)
+            cards.remove(card)
         else:
             player_cards.append(card)
+            cards.remove(card)
     elif player == 'dealer':
         if card == 11:
             if len(dealer_cards) >= 1 and dealer_cards[0] == 11 or dealer_score >= 11:
                 card = 1
                 dealer_cards.append(card)
+                cards.remove(11)
             else:
                 card = 11
                 dealer_cards.append(card)
+                cards.remove(card)
         else:
             dealer_cards.append(card)
-        print(dealer_cards)
+            cards.remove(card)
+
 
 def calculate_score(player):
     if player == player_name:
@@ -100,6 +104,9 @@ print('NOTE: If your score shows 0, this indicates a BlackJack!')
 player_name = input('Hello! Welcome to BlackJack. What is your name?\n')
 play_again = 'y'
 while play_again != 'n':
+  cards = [11, 11, 11, 11, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4, 5, 5, 5, 5, 6, 6, 6, 6,
+           7, 7, 7, 7, 8, 8, 8, 8, 9, 9, 9, 9, 10, 10, 10, 10, 10, 10, 10, 
+           10, 10, 10, 10, 10, 10, 10, 10, 10]
   player_score = 0
   dealer_score = 0
   player_cards = []
