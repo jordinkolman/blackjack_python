@@ -17,11 +17,15 @@ def deal(player):
             player_cards.append(card)
     elif player == 'dealer':
         if card == 11:
-            if dealer_score <= 10:
-                card = 11
-            else:
+            if len(dealer_cards) >= 1 and dealer_cards[0] == 11 or dealer_score >= 11:
                 card = 1
-        dealer_cards.append(card)
+                dealer_cards.append(card)
+            else:
+                card = 11
+                dealer_cards.append(card)
+        else:
+            dealer_cards.append(card)
+        print(dealer_cards)
 
 def calculate_score(player):
     if player == player_name:
@@ -92,6 +96,7 @@ def game():
     return winner
   
 print(art.logo)
+print('NOTE: If your score shows 0, this indicates a BlackJack!')
 player_name = input('Hello! Welcome to BlackJack. What is your name?\n')
 play_again = 'y'
 while play_again != 'n':
