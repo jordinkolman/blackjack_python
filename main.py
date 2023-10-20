@@ -2,128 +2,117 @@ import art
 import random
 import os
 
-def clear():
-  os.system('cls' if os.name == 'nt' else 'clear')
-
-
-def deal(player):
-    card = random.choice(cards)
-    if player == player_name:
-        if card == 11:
-            ace_choice = int(input('You drew an Ace! Would you like a 1, or 11?\n'))
-            player_cards.append(ace_choice)
-            cards.remove(card)
+def main():
+    #TODO
+    print(art.logo)
+    print('Note: If your score shows 0 after deal, this indicates a BlackJack!')
+    players = []
+    print("Please add a player, or leave blank to begin (Requires at least 1 player)")
+    add_another = 'y'
+    while add_another != 'n':
+        player = add_player()
+        players.append(player)
+        add_another = input('Add another? y/n ').lower().strip()
+    play_again = 'y'
+    while play_again != 'n':
+        cards = [2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4, 5, 5, 5, 5, 6, 6, 6, 6,
+           7, 7, 7, 7, 8, 8, 8, 8, 9, 9, 9, 9, 10, 10, 10, 10, "J", "J", "J", 
+           "J", "Q", "Q", "Q", "Q", "K", "K", "K", "K", "A", "A", "A", "A"]
+        winners = []
+        random.shuffle(cards)
+        for player in players:
+            player["Score"] = 0
+        dealer = {"Name": "Dealer", "Hand": [], "Score": 0}
+        clear()
+        print(art.logo)
+        for _ in range(2):
+            for player in players:
+                player = deal(player, players, cards[0])
+                cards.pop(0)
+            dealer = deal(dealer, players, cards[0])
+            cards.pop(0)
+        print(f"Dealer Face Up Card: {dealer["Hand"][1]}")
+        for player in players:
+                print(player)
+        for player in players:
+            if player["Score"] == 21:
+                winners.append(player["Name"])
+                print("Blackjack!")
         else:
-            player_cards.append(card)
-            cards.remove(card)
-    elif player == 'dealer':
-        if card == 11:
-            if len(dealer_cards) >= 1 and dealer_cards[0] == 11 or dealer_score >= 11:
-                card = 1
-                dealer_cards.append(card)
-                cards.remove(11)
-            else:
-                card = 11
-                dealer_cards.append(card)
-                cards.remove(card)
-        else:
-            dealer_cards.append(card)
-            cards.remove(card)
-
-
-def calculate_score(player):
-    if player == player_name:
-        score = sum(player_cards)
-    elif player == 'dealer':
-       score = sum(dealer_cards)
-    return score
-
-
-def compare(player_score, dealer_score, player_card_count, dealer_card_count):
-  if player_score == 0:
-    return player_name
-  elif dealer_score == 0:
-    return 'Dealer'
-  elif player_score > dealer_score and player_score <= 21:
-    return player_name
-  elif dealer_score > player_score and dealer_score <= 21:
-    return 'Dealer'
-  elif dealer_score > 21 and player_score <= 21:
-    return player_name
-  elif dealer_score <= 21 and player_score > 21:
-    return 'Dealer'
-  elif player_score == dealer_score and player_score <= 21:
-    if player_card_count < dealer_card_count:
-      return player_name
-    else:
-      return 'Dealer'
-  
-def game():
-    deal(player_name)
-    deal('dealer')
-    deal(player_name)
-    deal('dealer')
-    player_score = calculate_score(player_name)
-    dealer_score = calculate_score('dealer')
-    dealer_card_count = 2
-    player_card_count = 2
-    print(f'{player_name}  Hand: {player_cards}  Score: {player_score}\n')
-    print(f'Dealer  Face-Up Card: {dealer_cards[1]} \n')
-    if player_score == 21:
-            player_score = 0
-            winner = compare(player_score, dealer_score, player_card_count, dealer_card_count)
-    elif dealer_score == 21:
-            dealer_score = 0
-            winner = compare(player_score, dealer_score, player_card_count, dealer_card_count)
-    else:
-            hit_choice = input("Would you like to hit, or stay?\n")
-            while hit_choice != 'stay' and player_score < 21:
-                deal(player_name)
-                player_card_count += 1
-                player_score = calculate_score(player_name)
-                print(f'{player_name}  Hand: {player_cards}  Score: {player_score}')
-                if player_score > 21:
-                    print('You busted!')
-                    break
-                hit_choice = input("Would you like to hit, or stay?\n")
-            while dealer_score <= 16 and player_score <= 21:
-                deal('dealer')
-                dealer_card_count += 1
-                dealer_score = calculate_score('dealer')
-                print(f'Dealer  Face Up Cards:{dealer_cards[1:]}')
-                if dealer_score > 21:
+            for player in players:
+                hit_choice = input(f"{player["Name"]}, would you like to hit, or stay? ").lower().strip()
+                while hit_choice.lower() != "stay" and player["Score"] < 21:
+                    player = deal(player, players, cards[0])
+                    cards.pop(0)
+                    print(player)
+                    if player["Score"] > 21:
+                        print("You busted! ")
+                        break
+                    hit_choice = input("Would you like another hit, or to stay? ").lower().strip()
+            while dealer["Score"] < 16:
+                dealer = deal(dealer, players, cards[0])
+                cards.pop(0)
+                print(f'Dealer Face Up Cards: {dealer["Hand"][1:]}')
+                if dealer["Score"] > 21:
                     print('Dealer busted!')
                     break
-    print(f'Player Final Hand: {player_cards}  Score: {player_score}')
-    print(f'Dealer Final Hand: {dealer_cards}  Score: {dealer_score}')
-    winner = compare(player_score, dealer_score, player_card_count, dealer_card_count)
-    return winner
-  
-print(art.logo)
-print('NOTE: If your score shows 0, this indicates a BlackJack!')
-player_name = input('Hello! Welcome to BlackJack. What is your name?\n')
-play_again = 'y'
-while play_again != 'n':
-  cards = [11, 11, 11, 11, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4, 5, 5, 5, 5, 6, 6, 6, 6,
-           7, 7, 7, 7, 8, 8, 8, 8, 9, 9, 9, 9, 10, 10, 10, 10, 10, 10, 10, 
-           10, 10, 10, 10, 10, 10, 10, 10, 10]
-  player_score = 0
-  dealer_score = 0
-  player_cards = []
-  dealer_cards = []
-  player_card_count = 0
-  dealer_card_count = 0
-  clear()
-  print(art.logo)
-  winner = game()
-  print(f'The winner is {winner}!')
-  play_again = input('Would you like to play again? y/n\n')
-  
+        for player in players:
+            print(player)
+            if player["Score"] > dealer["Score"] and player["Score"] <= 21 and player["Name"] not in winners:
+                winners.append(player["Name"])
+        print(dealer)
+        if len(winners) == 0:
+            print("No Players Beat the Dealer. Game Over!")
+        else:
+            print("The Following Players Beat the Dealer! Congratulations!")
+            for winner in winners:
+                print(winner, end=" ")
+                print()
+        play_again = input("Play Again? Y/n ").lower().strip()
+        
+               
+        
+    
+        
+
+
+# Simple function to clear terminal window
+def clear():
+    os.system('cls' if os.name == 'nt' else 'clear')
+    
+    
+def add_player():
+    name = input("What is your name? ").strip()
+    hand = []
+    score = 0
+    player = {"Name": name, "Hand": hand, "Score": score}
+    
+    return player
     
 
+def deal(player, players, card):
+    if card == "A":
+        if player in players:
+            ace_choice = int(input(f"{player["Name"]}, you drew an Ace! Would you like a 1, or 11? "))
+            player["Hand"].append(ace_choice)
+            player["Score"] += ace_choice
+        elif player["Name"] == "Dealer":
+            player['Hand'].append(card)
+            if player["Score"] >= 11:
+                score += 1
+            else:
+                player["Score"] += 11
+    elif card in ['J', 'Q', 'K']:
+        player["Hand"].append(card)
+        player["Score"] += 10
+    else:
+        player["Hand"].append(card)
+        player["Score"] += card
+        
+    return player
+        
+    
 
-  
-
-
-
+if __name__ == "__main__":
+    main()
 
