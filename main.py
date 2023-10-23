@@ -4,7 +4,6 @@ import os
 
 def main():
     print(art.logo)
-    print('Note: If your score shows 0 after deal, this indicates a BlackJack!')
     players = []
     add_another = 'y'
     while add_another != 'n':
@@ -60,7 +59,7 @@ def main():
                             break
                         elif player["Score"] < 21:
                             hit_choice = input("Would you like another hit, or to stay? ").lower().strip()
-            while dealer["Score"] < 16 and players_left > 0:
+            while dealer["Score"] <= 15 and players_left > 0:
                 dealer = deal(dealer, players, cards[0])
                 cards.pop(0)
                 print(f'Dealer Face Up Cards: {dealer["Hand"][1:]}')
